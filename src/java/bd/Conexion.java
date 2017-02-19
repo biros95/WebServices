@@ -20,7 +20,7 @@ import java.util.logging.Logger;
 
 /**
  *
- * @author Lluis_2
+ * @author MarcosPortatil
  */
 public class Conexion {
 
@@ -37,10 +37,10 @@ public class Conexion {
         try {
             Class.forName("oracle.jdbc.driver.OracleDriver");
             try {
-                connection = DriverManager.getConnection("jdbc:oracle:thin:@192.168.180.10:1521:INSLAFERRERI", "ericdote", "1234");
+                connection = DriverManager.getConnection("jdbc:oracle:thin:@192.168.180.10:1521:INSLAFERRERI", "MFUENTES", "1234");
             } catch (SQLException ex) {
                 try {
-                    connection = DriverManager.getConnection("jdbc:oracle:thin:@ieslaferreria.xtec.cat:8081:INSLAFERRERI", "ericdote", "1234");
+                    connection = DriverManager.getConnection("jdbc:oracle:thin:@ieslaferreria.xtec.cat:8081:INSLAFERRERI", "MFUENTES", "1234");
                 } catch (SQLException e) {
                     System.out.println(e);
                 }
@@ -67,33 +67,48 @@ public class Conexion {
     public void finalizarConexion() throws SQLException {
         connection.close();
     }
+
     /**
-     * Metodo que le llega un objeto Ubicaciones y sirve para realizar un Insert Into de la ubicacion
-     * Una vez hecha la sentencia sql pasamos todos los datos del objeto ubicacion al PreparedStatement
-     * Convertimos la fecha para que no de problemas con la BBDD al ser diferente tipo de Date
-     * I devolvemos un booleano;
-     * @param ubi
+     * Metodo que le llega un objeto Ubicaciones y sirve para realizar un Insert
+     * Into de la ubicacion Una vez hecha la sentencia sql pasamos todos los
+     * datos del objeto ubicacion al PreparedStatement Convertimos la fecha para
+     * que no de problemas con la BBDD al ser diferente tipo de Date I
+     * devolvemos un booleano;
+     *
+     * @param ubicacion
      * @return
      * @throws SQLException
-     * @throws ParseException 
+     * @throws ParseException
      */
-    public boolean insertarUbicacion(Ubicaciones ubi) throws SQLException, ParseException {
+    public boolean insertarUbicacion(Ubicaciones ubicacion) throws SQLException, ParseException {
         int res;
-        String sql = "INSERT INTO UBICACION VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO UBICACIONES VALUES (?, ?, ?, ?)";
         PreparedStatement stmt = connection.prepareStatement(sql);
-        String date;
 
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        stmt.setString(1, ubi.getMatricula());
-        stmt.setDouble(2, ubi.getLatitud());
-        stmt.setDouble(3, ubi.getLongitud());
-        date = ubi.getData();
-        Date data = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(date);
-        java.sql.Date sDate = convertUtilToSql(data);
-        stmt.setDate(4, sDate);
+        stmt.setString(1, ubicacion.getMatricula());
+        stmt.setDouble(2, ubicacion.getLatitud());
+        stmt.setDouble(3, ubicacion.getLongitud());
+
+        stmt.setDate(4, fechaSql(ubicacion.getData()));
         res = stmt.executeUpdate();
         return (res == 1);
 
+    }
+
+    /**
+     * Metodo que devuelve un objeto tipo java.sql.Date y obtiene un objeto por
+     * parametro de tipo fecha. Una vez tiene fecha lo transforma con un parse a
+     * un objeto de tipo date y lo convierte a un sql
+     *
+     * @param fecha
+     * @return
+     * @throws ParseException
+     */
+    private java.sql.Date fechaSql(String fecha) throws ParseException {
+        Date date = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").parse(fecha);
+
+        return new java.sql.Date(date.getTime());
     }
 
     /**
@@ -173,15 +188,5 @@ public class Conexion {
         finalizarConexion();
         return lista;
     }
-    /**
-     * Metodo para convertir de util.Date a sql.Date
-     * @param uDate
-     * @return 
-     */
-    private java.sql.Date convertUtilToSql(java.util.Date uDate) {
 
-        java.sql.Date sDate = new java.sql.Date(uDate.getTime());
-
-        return sDate;
-    }
 }
