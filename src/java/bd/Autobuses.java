@@ -7,7 +7,7 @@ package bd;
 
 /**
  *
- * @author Eric
+ * @author MarcosPortatil
  */
 public class Autobuses {
     

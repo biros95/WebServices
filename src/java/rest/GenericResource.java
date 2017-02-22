@@ -29,7 +29,7 @@ import javax.ws.rs.core.MediaType;
  *
  * @author Lluis_2
  */
-@Path("mapas")
+@Path("generic")
 public class GenericResource {
 
     @Context
@@ -74,9 +74,9 @@ public class GenericResource {
     }
 
     @GET
-    @Path("cincoUltimasPosiciones/{matricula}")
+    @Path("ultimasPosDeUnBus/{matricula}")
     @Produces(MediaType.APPLICATION_JSON)
-    public String mostrarUbicacionAutobus(@PathParam("matricula") String matricula) {
+    public String ultimasPos(@PathParam("matricula") String matricula) {
         List<Ubicaciones> ubi = null;
         Conexion conexion = new Conexion();
         try {
@@ -106,7 +106,7 @@ public class GenericResource {
     }
 
     @GET
-    @Path("ultima/posiciones")
+    @Path("todos/ubicacion")
     @Produces(MediaType.APPLICATION_JSON)
     public String mostrarUltimasPosTodosBuses() {
         List<Ubicaciones> auto = null;

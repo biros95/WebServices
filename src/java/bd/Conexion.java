@@ -157,13 +157,13 @@ public class Conexion {
     public List<Ubicaciones> obtenerUbicacionBus(String matricula) throws SQLException {
         List<Ubicaciones> ubi = new ArrayList<>();
         ResultSet rset;
-        String sql = "SELECT * FROM (SELECT * FROM UBICACION WHERE matricula LIKE ? ORDER BY data DESC) WHERE ROWNUM <=5";
+        String sql = "SELECT * FROM (SELECT * FROM UBICACIONES WHERE matricula LIKE ? ORDER BY FECHA DESC) WHERE ROWNUM <=5";
 
         PreparedStatement stmt = getConnection().prepareStatement(sql);
         stmt.setString(1, matricula);
         rset = stmt.executeQuery();
         while (rset.next()) {
-            ubi.add(new Ubicaciones(rset.getString("MATRICULA"), rset.getDouble("LATITUD"), rset.getDouble("LONGITUD"), rset.getString("DATA")));
+            ubi.add(new Ubicaciones(rset.getString("MATRICULA"), rset.getDouble("LATITUD"), rset.getDouble("LONGITUD"), rset.getString("FECHA")));
         }
         finalizarConexion();
         return ubi;
@@ -179,11 +179,11 @@ public class Conexion {
     public List<Ubicaciones> obtenerUltimaPosBuses() throws SQLException {
         ResultSet rset;
         List<Ubicaciones> lista = new ArrayList<>();
-        String sql = "SELECT * FROM UBICACION WHERE (MATRICULA, DATA) IN (SELECT MATRICULA, MAX(DATA) FROM UBICACION GROUP BY MATRICULA)";
+        String sql = "SELECT * FROM UBICACIONES WHERE (MATRICULA, FECHA) IN (SELECT MATRICULA, MAX(FECHA) FROM UBICACIONES GROUP BY MATRICULA)";
         PreparedStatement stmt = getConnection().prepareStatement(sql);
         rset = stmt.executeQuery();
         while (rset.next()) {
-            lista.add(new Ubicaciones(rset.getString("MATRICULA"), rset.getDouble("LATITUD"), rset.getDouble("LONGITUD"), rset.getString("DATA")));
+            lista.add(new Ubicaciones(rset.getString("MATRICULA"), rset.getDouble("LATITUD"), rset.getDouble("LONGITUD"), rset.getString("FECHA")));
         }
         finalizarConexion();
         return lista;
